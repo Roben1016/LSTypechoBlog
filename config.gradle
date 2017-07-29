@@ -1,0 +1,46 @@
+ext {
+
+    android = [
+            compileSdkVersion       : 25,
+            buildToolsVersion       : "25.0.2",
+            minSdkVersion           : 16,
+            targetSdkVersion        : 23,
+            versionCode             : 1,
+            versionName             : "1.0.0"
+    ]
+
+    version = [
+            androidSupportSdkVersion: "25.3.1",
+            canarySdkVersion        : "1.5.1"
+    ]
+
+    dependencies = [
+            //support
+            "appcompat-v7"             : "com.android.support:appcompat-v7:${version["androidSupportSdkVersion"]}",
+            "design"                   : "com.android.support:design:${version["androidSupportSdkVersion"]}",
+            "support-v4"               : "com.android.support:support-v4:${version["androidSupportSdkVersion"]}",
+            "cardview-v7"              : "com.android.support:cardview-v7:${version["androidSupportSdkVersion"]}",
+            "annotations"              : "com.android.support:support-annotations:${version["androidSupportSdkVersion"]}",
+            "recyclerview-v7"          : "com.android.support:recyclerview-v7:${version["androidSupportSdkVersion"]}",
+
+            //network
+
+            //view
+            "floatedittext"            : "com.wrapp.floatlabelededittext:library:0.0.6",
+            "bottomnavigationbar"      : "com.ashokvarma.android:bottom-navigation-bar:1.4.1",
+
+            //tools
+            "gson"                     : "com.google.code.gson:gson:2.8.0",
+            "multidex"                 : "com.android.support:multidex:1.0.1",
+            "axmlrpc"                  : "fr.turri:aXMLRPC:1.11.0",
+
+            //test
+            "junit"                    : "junit:junit:4.12",
+            "androidJUnitRunner"       : "android.support.test.runner.AndroidJUnitRunner",
+            "canary-debug"             : "com.squareup.leakcanary:leakcanary-android:${version["canarySdkVersion"]}",
+            "canary-release"           : "com.squareup.leakcanary:leakcanary-android-no-op:${version["canarySdkVersion"]}",
+            "canary-test"              : "com.squareup.leakcanary:leakcanary-android-no-op:${version["canarySdkVersion"]}"
+    ]
+
+
+}

@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Typecho</string>
+    <string name="blog_address">博客网站</string>
+    <string name="blog_user_name">博客用户名</string>
+    <string name="blog_user_pwd">博客密码</string>
+    <string name="login_text">登录</string>
+    <string name="null_url">博客网站不能为空</string>
+    <string name="null_user_name">博客用户名不能为空</string>
+    <string name="null_user_pwd">博客密码不能为空</string>
+    <string name="load_failed">加载失败</string>
+    <string name="login_success">登录成功</string>
+    <string name="network_null">网络未连接,请检查网络</string>
+    <string name="load_failed_url">请求失败,请检查网站地址是否正确</string>
+    <string name="mine_text">我的</string>
+    <string name="none_text" />
+    <string name="setting_text">设置</string>
+</resources>
