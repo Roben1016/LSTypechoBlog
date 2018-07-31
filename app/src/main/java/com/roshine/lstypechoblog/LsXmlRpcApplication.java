@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
+import com.roshine.lstypechoblog.imageloader.ImageLoaderManager;
 import com.squareup.leakcanary.LeakCanary;
 
 
@@ -21,6 +22,7 @@ public class LsXmlRpcApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        ImageLoaderManager.getInstance().init(this);
         applicationContext = getApplicationContext();
 //         安装LeakCanary
         if (LeakCanary.isInAnalyzerProcess(this)) {

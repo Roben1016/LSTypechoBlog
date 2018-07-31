@@ -55,7 +55,6 @@ public class NormalProgressDialog extends ProgressDialog implements DialogInterf
         if (sDialog != null && sDialog.isShowing()) {
             sDialog.dismiss();
         }
-
         if (context == null || !(context instanceof Activity)) {
             return;
         }

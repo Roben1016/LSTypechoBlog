@@ -7,6 +7,7 @@ import android.os.Message;
 
 import com.google.gson.Gson;
 import com.roshine.lstypechoblog.R;
+import com.roshine.lstypechoblog.constants.Constants;
 import com.roshine.lstypechoblog.customs.WeakRefHandler;
 import com.roshine.lstypechoblog.utils.LogUtil;
 import com.roshine.lstypechoblog.utils.NetWorkUtil;
@@ -14,12 +15,14 @@ import com.roshine.lstypechoblog.utils.NetWorkUtil;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import de.timroes.axmlrpc.XMLRPCCallback;
 import de.timroes.axmlrpc.XMLRPCClient;
 import de.timroes.axmlrpc.XMLRPCException;
 import de.timroes.axmlrpc.XMLRPCServerException;
+import de.timroes.axmlrpc.XMLRPCTimeoutException;
 
 /**
  * @author Roshine
@@ -32,11 +35,11 @@ import de.timroes.axmlrpc.XMLRPCServerException;
  */
 public class XmlRequest implements BaseRequest{
     private static final int SERVER_SUCCESS = 111;
-    private static final int XMLRPC_EXCEPTION = 112;
+//    private static final int XMLRPC_EXCEPTION = 112;
     private static final int SERVER_ERROR = 113;
     private String url;
     private String method;
-    private int timeOut;
+    private int timeOut = Constants.NormalConstants.TIME_OUT;
     private List<Object> parameters;
     private RequestCallBack callBack;
     private WeakRefHandler handler;
@@ -91,7 +94,7 @@ public class XmlRequest implements BaseRequest{
 
     @Override
     public BaseRequest excute() {
-        if(NetWorkUtil.isConnected(context)){
+        if(NetWorkUtil.isConnect()){
             XMLRPCCallback listener = new XMLRPCCallback() {
                 public void onResponse(long id, Object result) {
                     Gson gson = new Gson();
@@ -102,14 +105,17 @@ public class XmlRequest implements BaseRequest{
                     msg.sendToTarget();
                 }
                 public void onError(long id, XMLRPCException error) {
-                    LogUtil.showI("Roshine","error:"+error.getMessage());
                     Message msg = handler.obtainMessage();
-                    msg.what = XMLRPC_EXCEPTION;
+                    msg.what = SERVER_ERROR;
                     msg.obj = error.getMessage();
+                    LogUtil.showI("Roshine","onError:"+error.getMessage());
                     if(error.getCause() instanceof FileNotFoundException){
                         msg.obj = context.getResources().getString(R.string.load_failed_url);
+                    } else if(error.getCause() instanceof XMLRPCTimeoutException){
+                        msg.obj = context.getResources().getString(R.string.time_out);
+                    }else if(error.getCause() instanceof UnknownHostException){
+                        msg.obj = context.getResources().getString(R.string.net_error);
                     }
-                    msg.obj = error.getMessage();
                     msg.sendToTarget();
                 }
                 public void onServerError(long id, XMLRPCServerException error) {
@@ -117,19 +123,22 @@ public class XmlRequest implements BaseRequest{
                     Message msg = handler.obtainMessage();
                     msg.what = SERVER_ERROR;
                     msg.obj = error.getMessage();
+                    if(error.getCause() instanceof UnknownHostException){
+                        msg.obj = context.getResources().getString(R.string.net_error);
+                    }
                     msg.sendToTarget();
                 }
             };
             try {
                 URL urlRequest = new URL(url);
-                XMLRPCClient client = new XMLRPCClient(urlRequest);
+                client = new XMLRPCClient(urlRequest);
                 client.setTimeout(timeOut);
                 id = client.callAsync(listener, method, parameters.toArray());
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 LogUtil.showI("Roshine","MalformedURLException:"+e.getMessage());
                 Message msg = handler.obtainMessage();
-                msg.what = XMLRPC_EXCEPTION;
+                msg.what = SERVER_ERROR;
                 msg.obj = context.getResources().getString(R.string.load_failed_url);
                 msg.sendToTarget();
             }
@@ -145,6 +154,7 @@ public class XmlRequest implements BaseRequest{
     @Override
     public void cancel() {
         if (client != null) {
+            LogUtil.showI("Roshine","取消的id:"+id);
             client.cancel(id);
         }
     }
@@ -157,11 +167,6 @@ public class XmlRequest implements BaseRequest{
                 }
                 break;
             case SERVER_ERROR:
-                if (callBack != null && msg.obj!=null) {
-                    callBack.onServerError((String)msg.obj);
-                }
-                break;
-            case XMLRPC_EXCEPTION:
                 if (callBack != null && msg.obj != null) {
                     callBack.onError((String)msg.obj);
                 }

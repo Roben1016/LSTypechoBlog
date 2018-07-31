@@ -1,17 +1,20 @@
 ext {
 
     android = [
-            compileSdkVersion       : 25,
-            buildToolsVersion       : "25.0.2",
+            compileSdkVersion       : 26,
+            buildToolsVersion       : "26.0.2",
             minSdkVersion           : 16,
-            targetSdkVersion        : 23,
+            targetSdkVersion        : 26,
             versionCode             : 1,
             versionName             : "1.0.0"
     ]
 
     version = [
-            androidSupportSdkVersion: "25.3.1",
-            canarySdkVersion        : "1.5.1"
+            androidSupportSdkVersion: "26.1.0",
+            canarySdkVersion        : "1.5.1",
+            retrofitSdkVersion      : "2.3.0",
+            rxlifecycle2SdkVersion   : "2.1.0",
+            butterknifeSdkVersion   : "8.6.0"
     ]
 
     dependencies = [
@@ -24,15 +27,34 @@ ext {
             "recyclerview-v7"          : "com.android.support:recyclerview-v7:${version["androidSupportSdkVersion"]}",
 
             //network
+            "glide"                    : "com.github.bumptech.glide:glide:3.8.0",
+            "retrofit"                 : "com.squareup.retrofit2:retrofit:${version["retrofitSdkVersion"]}",
+            "retrofit-converter-gson"  : "com.squareup.retrofit2:converter-gson:${version["retrofitSdkVersion"]}",
+            "retrofit-adapter-rxjava"  : "com.squareup.retrofit2:adapter-rxjava:${version["retrofitSdkVersion"]}",
+            "retrofit-adapter-rxjava2" : "com.squareup.retrofit2:adapter-rxjava2:${version["retrofitSdkVersion"]}",
+            "okhttp3"                  : "com.squareup.okhttp3:okhttp:3.8.0",
+
+            //rx2
+            "rxandroid2"                : "io.reactivex.rxjava2:rxandroid:2.0.1",
+            "rxjava2"                   : "io.reactivex.rxjava2:rxjava:2.1.0",
+            "rxlifecycle2"              : "com.trello.rxlifecycle2:rxlifecycle:${version["rxlifecycle2SdkVersion"]}",
+            "rxlifecycle2-components"   : "com.trello.rxlifecycle2:rxlifecycle-components:${version["rxlifecycle2SdkVersion"]}",
 
             //view
             "floatedittext"            : "com.wrapp.floatlabelededittext:library:0.0.6",
             "bottomnavigationbar"      : "com.ashokvarma.android:bottom-navigation-bar:1.4.1",
+            "butterknife"              : "com.jakewharton:butterknife:${version["butterknifeSdkVersion"]}",
+            "butterknife-compiler"     : "com.jakewharton:butterknife-compiler:${version["butterknifeSdkVersion"]}",
+
 
             //tools
             "gson"                     : "com.google.code.gson:gson:2.8.0",
             "multidex"                 : "com.android.support:multidex:1.0.1",
             "axmlrpc"                  : "fr.turri:aXMLRPC:1.11.0",
+            "permission"               : "com.roshine:lspermission:1.0.3",
+            "edit_tool"                : "ren.qinc.edit:lib:0.0.4",
+            "event_bus"                : "org.greenrobot:eventbus:3.0.0",
+            "jISO8601"                 : "fr.turri:jISO8601:0.2",
 
             //test
             "junit"                    : "junit:junit:4.12",

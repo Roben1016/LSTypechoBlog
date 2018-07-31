@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.TextUtils;
+import com.roshine.lstypechoblog.LsXmlRpcApplication;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -12,18 +14,36 @@ import java.net.NetworkInterface;
 import java.util.Enumeration;
 
 /**
- * @author Roshine
- * @date 2017/7/24 10:34
- * @blog http://www.roshine.xyz
- * @email roshines1016@gmail.com
- * @github https://github.com/Roben1016
- * @phone 136****1535
- * @desc 网络相关工具类
+ * Description:
+ * Created by guzhenfu on 16/1/12.
  */
 public class NetWorkUtil {
-    public static boolean isNetworkAvailable(Context context) {
+    // 手机网络类型
+    public static final int NETTYPE_WIFI = 0x01;
+    public static final int NETTYPE_CMWAP = 0x02;
+    public static final int NETTYPE_CMNET = 0x03;
+
+    public static boolean isConnect() {
+        ConnectivityManager cm = (ConnectivityManager) LsXmlRpcApplication.getContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            //如果仅仅是用来判断网络连接
+            //则可以使用 cm.getActiveNetworkInfo().isAvailable();
+            NetworkInfo[] info = cm.getAllNetworkInfo();
+            if (info != null) {
+                for (int i = 0; i < info.length; i++) {
+                    if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean isNetworkAvailable() {
         try {
-            NetworkInfo localNetworkInfo = ((ConnectivityManager) context
+            NetworkInfo localNetworkInfo = ((ConnectivityManager) LsXmlRpcApplication.getContext()
                     .getSystemService(Context.CONNECTIVITY_SERVICE))
                     .getActiveNetworkInfo();
             boolean bool1 = false;
@@ -46,30 +66,39 @@ public class NetWorkUtil {
     }
 
     /**
-     * 判断网络是否连接
+     * 获取当前网络类型
      *
-     * @param context
-     * @return
+     * @return 0：没有网络 1：WIFI网络 2：WAP网络 3：NET网络
      */
-    public static boolean isConnected(Context context) {
-
-        ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (null != connectivity) {
-            NetworkInfo info = connectivity.getActiveNetworkInfo();
-            if (null != info && info.isConnected()) {
-                if (info.getState() == NetworkInfo.State.CONNECTED) {
-                    return true;
+    public static int getNetworkType() {
+        int netType = 0;
+        ConnectivityManager connectivityManager = (ConnectivityManager) LsXmlRpcApplication
+                .getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if (networkInfo == null) {
+            return netType;
+        }
+        int nType = networkInfo.getType();
+        if (nType == ConnectivityManager.TYPE_MOBILE) {
+            String extraInfo = networkInfo.getExtraInfo();
+            if (!TextUtils.isEmpty(extraInfo)) {
+                if (extraInfo.toLowerCase().equals("cmnet")) {
+                    netType = NETTYPE_CMNET;
+                } else {
+                    netType = NETTYPE_CMWAP;
                 }
             }
+        } else if (nType == ConnectivityManager.TYPE_WIFI) {
+            netType = NETTYPE_WIFI;
         }
-        return false;
+        return netType;
     }
 
     /**
      * 判断是否是wifi连接
      */
-    public static boolean isWifi(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean isWifi() {
+        ConnectivityManager cm = (ConnectivityManager) LsXmlRpcApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm == null || cm.getActiveNetworkInfo() == null)
             return false;
         else
@@ -80,8 +109,8 @@ public class NetWorkUtil {
     /**
      * 判断是否是手机连接
      */
-    public static boolean isMobile(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean isMobile() {
+        ConnectivityManager cm = (ConnectivityManager) LsXmlRpcApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm == null || cm.getActiveNetworkInfo() == null)
             return false;
         else
@@ -89,29 +118,6 @@ public class NetWorkUtil {
 
     }
 
-    /**
-     * 获取网络类型 联通的3G为UMTS或HSDPA，移动和联通的2G为GPRS或EDGE，电信的2G为CDMA，电信的3G为EVDO<br/>
-     * NETWORK_TYPE_CDMA 网络类型为CDMA<br/>
-     * NETWORK_TYPE_EDGE 网络类型为EDGE<br/>
-     * NETWORK_TYPE_EVDO_0 网络类型为EVDO0<br/>
-     * NETWORK_TYPE_EVDO_A 网络类型为EVDOA<br/>
-     * NETWORK_TYPE_GPRS 网络类型为GPRS<br/>
-     * NETWORK_TYPE_HSDPA 网络类型为HSDPA<br/>
-     * NETWORK_TYPE_HSPA 网络类型为HSPA<br/>
-     * NETWORK_TYPE_HSUPA 网络类型为HSUPA<br/>
-     * NETWORK_TYPE_UMTS 网络类型为UMTS<br/>
-     *
-     * @param context
-     * @return
-     */
-    public static int getNetType(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm == null || cm.getActiveNetworkInfo() == null)
-            return -1;
-        else
-            return cm.getActiveNetworkInfo().getType();
-
-    }
 
     /**
      * 获取手机ip
@@ -136,6 +142,7 @@ public class NetWorkUtil {
         return "";
     }
 
+
     /**
      * 打开网络设置界面
      */
@@ -156,4 +163,5 @@ public class NetWorkUtil {
         }
         activity.startActivity(intent);
     }
+
 }

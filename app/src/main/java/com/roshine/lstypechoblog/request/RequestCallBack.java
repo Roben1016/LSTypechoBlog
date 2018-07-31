@@ -35,6 +35,6 @@ public interface RequestCallBack {
      * @ param id The id as returned by the XMLRPCClient.asyncCall(..) method for this request.
      * @param error The error returned from the server.
      */
-    void onServerError(String error);
+//    void onServerError(String error);
 
 }

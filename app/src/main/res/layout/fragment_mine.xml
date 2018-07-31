@@ -4,4 +4,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include layout="@layout/base_tool_bar"/>
+    <RelativeLayout
+        android:id="@+id/rl_my_articles"
+        style="@style/MineItemBgStyle">
+        <TextView
+            style="@style/MineItemTextStyle"
+            android:text="@string/article_text"/>
+        <ImageView
+            style="@style/MineItemRightArrowStyle"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/rl_my_pages"
+        style="@style/MineItemBgStyle">
+        <TextView
+            style="@style/MineItemTextStyle"
+            android:text="@string/my_page_text"/>
+        <ImageView
+            style="@style/MineItemRightArrowStyle"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/rl_my_medias"
+        style="@style/MineItemBgStyle">
+        <TextView
+            style="@style/MineItemTextStyle"
+            android:text="@string/my_media_text"/>
+        <ImageView
+            style="@style/MineItemRightArrowStyle"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/rl_my_comments"
+        style="@style/MineItemBgStyle">
+        <TextView
+            style="@style/MineItemTextStyle"
+            android:text="@string/my_comment_text"/>
+        <ImageView
+            style="@style/MineItemRightArrowStyle"/>
+    </RelativeLayout>
 </LinearLayout>

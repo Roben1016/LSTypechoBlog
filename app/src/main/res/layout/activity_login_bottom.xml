@@ -2,55 +2,59 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     android:orientation="vertical"
-    android:paddingLeft="50dp"
-    android:paddingRight="50dp">
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="80dp"
-        android:src="@mipmap/typecho_icon" />
+        android:src="@drawable/typecho_icon" />
 
-    <com.wrapp.floatlabelededittext.FloatLabeledEditText
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp">
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="10dp"
+        android:hint="@string/blog_address">
+
 
         <EditText
             android:id="@+id/et_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:hint="@string/blog_address"
-            android:text="http://www.roshine.xyz/index.php/action/xmlrpc"
             android:inputType="textUri"
             android:maxLines="1"
-            android:textSize="14sp"/>
-    </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+            android:textSize="14sp" />
 
-    <com.wrapp.floatlabelededittext.FloatLabeledEditText
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:hint="@string/blog_user_name">
 
         <EditText
             android:id="@+id/et_user_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:hint="@string/blog_user_name"
             android:imeOptions="actionNext"
             android:inputType="text"
             android:maxLines="1"
-            android:textSize="14sp"
-            android:text="Roshine"/>
-    </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+            android:textSize="14sp" />
+    </android.support.design.widget.TextInputLayout>
 
-    <com.wrapp.floatlabelededittext.FloatLabeledEditText
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:hint="@string/blog_user_pwd"
+        app:passwordToggleEnabled="true">
 
         <EditText
             android:id="@+id/et_user_pwd"
@@ -61,18 +65,12 @@
             android:imeOptions="actionDone"
             android:inputType="textPassword"
             android:maxLines="1"
-            android:textSize="14sp"
-            android:text="luobin123"/>
-    </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+            android:textSize="14sp" />
+    </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/btn_login"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_marginTop="20dp"
-        android:background="@color/colorPrimary"
-        android:text="@string/login_text"
-        android:textColor="@color/white"
-        android:textSize="15sp" />
+        style="@style/NormalButtonStyle"
+        android:text="@string/login_text" />
 
 </LinearLayout>

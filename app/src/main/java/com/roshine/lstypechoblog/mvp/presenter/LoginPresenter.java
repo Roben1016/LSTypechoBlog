@@ -1,20 +1,18 @@
 package com.roshine.lstypechoblog.mvp.presenter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
+import android.os.Looper;
 
+import com.google.gson.Gson;
+import com.roshine.lstypechoblog.R;
+import com.roshine.lstypechoblog.constants.Constants;
+import com.roshine.lstypechoblog.http.RxSubUtil;
 import com.roshine.lstypechoblog.mvp.contract.ContractUtil;
-import com.roshine.lstypechoblog.mvp.model.ILoginModel;
 import com.roshine.lstypechoblog.mvp.model.LoginModel;
-import com.roshine.lstypechoblog.mvp.view.activity.ArticleListActivity;
-import com.roshine.lstypechoblog.mvp.view.activity.LoginActivity;
-import com.roshine.lstypechoblog.request.BaseRequest;
-import com.roshine.lstypechoblog.request.LsXmlRpcClient;
-import com.roshine.lstypechoblog.request.RequestCallBack;
+import com.roshine.lstypechoblog.utils.LogUtil;
+import com.roshine.lstypechoblog.utils.SPUtil;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.reactivex.Flowable;
 
 /**
  * @author Roshine
@@ -25,46 +23,72 @@ import java.util.List;
  * @phone 136****1535
  * @desc
  */
-public class LoginPresenter extends BasePresenter<ContractUtil.ILoginView> implements ContractUtil.ILoginPresenter {
-    private ContractUtil.ILoginView mILoginView;
+public class LoginPresenter extends IBasePresenter<ContractUtil.ILoginView> implements ContractUtil.ILoginPresenter {
     private LoginModel mLoginModel;
 
-    public LoginPresenter(ContractUtil.ILoginView iloginview) {
-        mILoginView = iloginview;
+    public LoginPresenter() {
         mLoginModel = new LoginModel(this);
     }
 
     @Override
-    public void getAllMethodAndAuthenty(Context context,String url, String userName, String password) {
-        mLoginModel.getAllMethod(context,url,userName,password);
+    public void getAllMethodAndAuthenty(Context context) {
+        String url = getView().getUrl();
+        String userName = getView().getUserName();
+        String password = getView().getUserPasswd();
+        if (url == null || url.equals("")) {
+            loginFail(context.getResources().getString(R.string.null_url));
+        } else if (userName == null || userName.equals("")) {
+            loginFail(context.getResources().getString(R.string.null_user_name));
+        } else if (password == null || password.equals("")) {
+            loginFail(context.getResources().getString(R.string.null_user_pwd));
+        } else {
+            Flowable<String> flowable = mLoginModel.getAllMethod(view.getUrl(), view.getUserName(), view.getUserPasswd());
+            if (flowable != null) {
+                compositeDisposable.add(flowable.subscribeWith(new RxSubUtil<String>(compositeDisposable,context) {
+                    @Override
+                    protected void onSuccess(String s) {
+                        SPUtil.setParam(Constants.SharedPreferancesKeys.USER_TOTAL_METHOD, s);
+                        SPUtil.setParam(Constants.SharedPreferancesKeys.BLOG_URL, url);
+                        Flowable<String> flowable1 = mLoginModel.getAuthenty(getView().getUserName(), getView().getUserPasswd());
+                        if (flowable1 != null) {
+                            //要先清除再添加
+                            compositeDisposable.clear();
+                            compositeDisposable.add(flowable1.subscribeWith(new RxSubUtil<String>(compositeDisposable,context) {
+                                @Override
+                                protected void onSuccess(String s) {
+                                    SPUtil.setParam(Constants.SharedPreferancesKeys.USER_NAME, userName);
+                                    SPUtil.setParam(Constants.SharedPreferancesKeys.USER_PASSWORD, password);
+                                    loginSuccess();
+                                }
+
+                                @Override
+                                protected void onFail(String errorMsg) {
+                                    loginFail(errorMsg);
+                                }
+                            }));
+                        } else {
+                            loginFail(context.getResources().getString(R.string.load_failed));
+                        }
+                    }
+
+                    @Override
+                    protected void onFail(String errorMsg) {
+                        loginFail(errorMsg);
+                    }
+                }));
+            } else {
+                loginFail(context.getResources().getString(R.string.load_failed));
+            }
+        }
     }
 
     @Override
     public void loginSuccess() {
-        mILoginView.loginSuccess();
+        getView().loadSuccess(null);
     }
 
     @Override
     public void loginFail(String message) {
-        mILoginView.loginFail(message);
+        getView().loadFail(message);
     }
-
-//    @Override
-//    public void loadSuccess(String result) {
-//        mILoginView.loadSuccess(result);
-//    }
-//
-//    @Override
-//    public void loadServerError(String message) {
-//        mILoginView.loadServerError(message);
-//    }
-//
-//    @Override
-//    public void loadError(String error) {
-//        mILoginView.loadError(error);
-//    }
-//
-//    public void login(String url, String userName, String password) {
-//        mLoginModel.login(url,userName,password);
-//    }
 }

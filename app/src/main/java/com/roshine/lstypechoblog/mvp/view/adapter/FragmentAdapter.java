@@ -9,10 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * FragmentAdapter
- * 
- * @author Administrator
- * @extends FragmentPagerAdapter
+ * @author Roshine
+ * @date 2017/7/18 16:04
+ * @blog http://www.roshine.xyz
+ * @email roshines1016@gmail.com
+ * @github https://github.com/Roben1016
+ * @phone 136****1535
+ * @desc viewPager中Adapter适配器
  */
 public class FragmentAdapter extends FragmentPagerAdapter {
 

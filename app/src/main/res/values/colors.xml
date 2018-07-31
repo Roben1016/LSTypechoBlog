@@ -6,4 +6,20 @@
     <color name="white">#ffffff</color>
     <color name="black_alpha_80">#CC000000</color>
     <color name="gray_light">#999999</color>
+    <color name="gray_lighter">#cccccc</color>
+    <color name="gray_lightset">#F3F3F3</color>
+    <color name="text_color_normal">#555555</color>
+    <color name="theme_green">#13b5b1</color>
+    <color name="theme_purple">#b54aa3</color>
+    <color name="theme_yellow">#ffff00</color>
+    <color name="red">#ff0000</color>
+    <color name="theme_brown">#795548</color>
+    <color name="black">#2b2b2b</color>
+    <color name="theme_pink">#ffc0cb</color>
+    <color name="theme_blue_light">#467b96</color>
+    <color name="theme_orange">#ff7f00</color>
+    <color name="theme_gray">#666666</color>
+    <color name="theme_green_light">#1ce376</color>
+    <color name="black_light">#111</color>
+    <color name="translator">#00000000</color>
 </resources>

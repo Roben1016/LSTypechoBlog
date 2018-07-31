@@ -4,15 +4,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.roshine.lstypechoblog.R;
+import com.roshine.lstypechoblog.constants.Constants;
 import com.roshine.lstypechoblog.mvp.contract.ContractUtil;
 import com.roshine.lstypechoblog.mvp.presenter.LoginPresenter;
 import com.roshine.lstypechoblog.mvp.view.activity.base.MvpBaseActivity;
+import com.roshine.lstypechoblog.utils.LogUtil;
+import com.roshine.lstypechoblog.utils.SPUtil;
+import com.roshine.lstypechoblog.utils.ThemeColorUtil;
+
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
 
 /**
  * @author Roshine
@@ -23,16 +32,32 @@ import com.roshine.lstypechoblog.mvp.view.activity.base.MvpBaseActivity;
  * @phone 136****1535
  * @desc 登录界面
  */
-public class LoginActivity extends MvpBaseActivity<ContractUtil.ILoginView,LoginPresenter> implements ContractUtil.ILoginView {
-    private Button btnLogin;
-    private EditText etUrl,etUserName,etUserPwd;
+public class LoginActivity extends MvpBaseActivity<ContractUtil.ILoginView, LoginPresenter> implements ContractUtil.ILoginView {
+    @BindView(R.id.tv_title)
+    TextView tvTitle;
+    @BindView(R.id.tb_base_tool_bar)
+    Toolbar toolbar;
+    @BindView(R.id.et_url)
+    EditText etUrl;
+    @BindView(R.id.et_user_name)
+    EditText etUserName;
+    @BindView(R.id.et_user_pwd)
+    EditText etUserPwd;
+    @BindView(R.id.btn_login)
+    Button btnLogin;
     private LoginPresenter mPresenter;
-    private TextView tvTitle;
-    private Toolbar toolbar;
+
+    private boolean hasSaveData;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter = getPresenter();
+        if(SPUtil.checkLogined()){
+            hasSaveData = true;
+            initData();
+        }else{
+            hasSaveData = false;
+        }
     }
 
     @Override
@@ -41,53 +66,63 @@ public class LoginActivity extends MvpBaseActivity<ContractUtil.ILoginView,Login
     }
 
     @Override
-    protected void initView() {
-        btnLogin = (Button) findViewById(R.id.btn_login);
-        etUrl = (EditText) findViewById(R.id.et_url);
-        etUserName = (EditText) findViewById(R.id.et_user_name);
-        etUserPwd = (EditText) findViewById(R.id.et_user_pwd);
-        tvTitle = (TextView) findViewById(R.id.tv_title);
-        toolbar = (Toolbar) findViewById(R.id.tb_base_tool_bar);
-//        toolbar.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+    protected void initViewData(Bundle savedInstanceState) {
         tvTitle.setText(getResources().getString(R.string.login_text));
-        btnLogin.setOnClickListener(v -> {
-            if(TextUtils.isEmpty(etUrl.getText().toString())){
-                toast(LoginActivity.this.getString(R.string.null_url));
-                return;
-            } else if(TextUtils.isEmpty(etUserName.getText().toString())){
-                toast(LoginActivity.this.getString(R.string.null_user_name));
-                return;
-            } else if(TextUtils.isEmpty(etUserPwd.getText().toString())){
-                toast(LoginActivity.this.getString(R.string.null_user_pwd));
-                return;
-            }
-            initData();
-        });
+        btnLogin.setBackgroundColor(getResources().getColor(ThemeColorUtil.getThemeColor()));
+        toolbar.setBackgroundColor(getResources().getColor(ThemeColorUtil.getThemeColor()));
+    }
+    @OnClick(R.id.btn_login)
+    void textClick() {
+        initData();
     }
 
     private void initData() {
-        showProgress();
-        mPresenter.getAllMethodAndAuthenty(this,etUrl.getText().toString(),
-                etUserName.getText().toString(),
-                etUserPwd.getText().toString());
+        showProgress(this.getString(R.string.loading_text),false);
+        mPresenter.getAllMethodAndAuthenty(this);
     }
 
     @Override
     public LoginPresenter getPresenter() {
-        return new LoginPresenter(this);
+        mPresenter = new LoginPresenter();
+        return mPresenter;
     }
 
+    @Nullable
     @Override
-    public void loginSuccess() {
+    public void loadSuccess(Object datas) {
         hideProgress();
         toast(this.getString(R.string.login_success));
-        startActivity(new Intent(this,MainActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 
     @Override
-    public void loginFail(String message) {
+    public void loadFail(String message) {
         hideProgress();
         toast(message);
+    }
+
+    @Override
+    public String getUrl() {
+        if(SPUtil.checkLogined()){
+            return SPUtil.getParam(Constants.SharedPreferancesKeys.BLOG_URL,"").toString();
+        }
+        return etUrl.getText().toString();
+    }
+
+    @Override
+    public String getUserName() {
+        if(hasSaveData){
+            return SPUtil.getParam(Constants.SharedPreferancesKeys.USER_NAME,"").toString();
+        }
+        return etUserName.getText().toString();
+    }
+
+    @Override
+    public String getUserPasswd() {
+        if(hasSaveData){
+            return SPUtil.getParam(Constants.SharedPreferancesKeys.USER_PASSWORD,"").toString();
+        }
+        return etUserPwd.getText().toString();
     }
 }

@@ -2,17 +2,23 @@ package com.roshine.lstypechoblog.mvp.view.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.roshine.lstypechoblog.R;
-import com.roshine.lstypechoblog.utils.ActivityUtil;
-import com.roshine.lstypechoblog.utils.SPUtil;
+import com.roshine.lstypechoblog.mvp.view.activity.ArticleListActivity;
+import com.roshine.lstypechoblog.mvp.view.activity.MediaListActivity;
+import com.roshine.lstypechoblog.mvp.view.fragment.base.BaseFragment;
+import com.roshine.lstypechoblog.utils.ThemeColorUtil;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 
 /**
  * @author Roshine
@@ -23,26 +29,35 @@ import com.roshine.lstypechoblog.utils.SPUtil;
  * @phone 136****1535
  * @desc Fragment 我的
  */
-public class MineFragment extends Fragment {
-    private Toolbar toolbar;
-    private TextView tvTitle;
+public class MineFragment extends BaseFragment {
+    @BindView(R.id.tv_title)
+    TextView tvTitle;
+    @BindView(R.id.tb_base_tool_bar)
+    Toolbar toolbar;
+    @BindView(R.id.rl_my_articles)
+    RelativeLayout rlMyArticles;
+    @BindView(R.id.rl_my_pages)
+    RelativeLayout rlMyPages;
+    @BindView(R.id.rl_my_medias)
+    RelativeLayout rlMyMedias;
+    @BindView(R.id.rl_my_comments)
+    RelativeLayout rlMyComments;
     private String title;
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_mine,container,false);
-    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initView(view);
     }
 
-    private void initView(View view) {
-        toolbar = (Toolbar) view.findViewById(R.id.tb_base_tool_bar);
-        tvTitle = (TextView) view.findViewById(R.id.tv_title);
+    @Override
+    protected int getLayoutId() {
+        return R.layout.fragment_mine;
+    }
+
+    @Override
+    protected void initViewData(Bundle savedInstanceState) {
         tvTitle.setText(title);
+        toolbar.setBackgroundColor(getActivity().getResources().getColor(ThemeColorUtil.getThemeColor()));
     }
 
     public static MineFragment newInstance(Bundle bundle) {
@@ -62,4 +77,14 @@ public class MineFragment extends Fragment {
             title = bundle.getString("title");
         }
     }
+    @OnClick(R.id.rl_my_articles)
+    void onArticleClick(){
+        startActivity(ArticleListActivity.class);
+    }
+
+    @OnClick(R.id.rl_my_medias)
+    void onMediaClick(){
+        startActivity(MediaListActivity.class);
+    }
 }
+

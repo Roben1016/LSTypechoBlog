@@ -1,17 +1,20 @@
 package com.roshine.lstypechoblog.mvp.view.activity.base;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Window;
 
+import com.roshine.lstypechoblog.R;
 import com.roshine.lstypechoblog.customview.NormalProgressDialog;
 import com.roshine.lstypechoblog.mvp.contract.BaseView;
 import com.roshine.lstypechoblog.utils.ActivityUtil;
-import com.roshine.lstypechoblog.utils.LogUtil;
+import com.roshine.lstypechoblog.utils.DisplayUtil;
 import com.roshine.lstypechoblog.utils.ToastUtil;
-import com.roshine.lstypechoblog.utils.Util;
+
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * @author Roshine
@@ -24,28 +27,40 @@ import com.roshine.lstypechoblog.utils.Util;
  */
 public abstract class BaseActivity extends AppCompatActivity implements BaseView{
     protected Activity activity;
+    private Unbinder unbinder;
+    protected int screenWidth;
+    protected int screenHeight;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
         super.onCreate(savedInstanceState);
+        screenHeight = DisplayUtil.getScreenHeight(this);
+        screenWidth = DisplayUtil.getScreenWidth(this);
         ActivityUtil.getInstance().addActivity(this);//添加activity栈
         activity = this;
         if(getLayoutId() != 0){
             setContentView(getLayoutId());
+            unbinder = ButterKnife.bind(this);
         }
-        initView();
+        initViewData(savedInstanceState);
     }
 
-    protected int getLayoutId(){
-        return 0;
-    };
-    protected void initView(){
+    protected abstract int getLayoutId();
 
-    };
+    protected abstract void initViewData(Bundle savedInstanceState);
 
     @Override
     public void showProgress() {
-        NormalProgressDialog.showLoading(this,"正在加载中",false);
+        showProgress(this.getString(R.string.loading_text),false);
+    }
+
+    @Override
+    public void showProgress(String message) {
+        showProgress(message,false);
+    }
+
+    @Override
+    public void showProgress(String message, boolean cancelable) {
+        NormalProgressDialog.showLoading(this,message,cancelable);
     }
 
     @Override
@@ -69,9 +84,37 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
     }
 
     @Override
+    public void startActivity(Class<?> clz) {
+        startActivity(new Intent(BaseActivity.this, clz));
+    }
+
+    @Override
+    public void startActivity(Class<?> clz, Bundle bundle) {
+        Intent intent = new Intent();
+        intent.setClass(this, clz);
+        if (bundle != null) {
+            intent.putExtras(bundle);
+        }
+        startActivity(intent);
+    }
+
+    @Override
+    public void startActivityForResult(Class<?> cls, Bundle bundle, int requestCode) {
+        Intent intent = new Intent();
+        intent.setClass(this, cls);
+        if (bundle != null) {
+            intent.putExtras(bundle);
+        }
+        startActivityForResult(intent, requestCode);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         ActivityUtil.getInstance().removeActivity(this);//移除activity栈
+        if (unbinder != null && unbinder != Unbinder.EMPTY) unbinder.unbind();
+        this.unbinder = null;
+        NormalProgressDialog.stopLoading();
 //        if (hasBus) {
 //            EventBus.getDefault().unregister(this);
 //        }

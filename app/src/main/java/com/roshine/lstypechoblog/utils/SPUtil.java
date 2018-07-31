@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 
+import com.roshine.lstypechoblog.LsXmlRpcApplication;
+import com.roshine.lstypechoblog.constants.Constants;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,14 +31,13 @@ public class SPUtil {
 	
 	/**
 	 * 保存数据的方法，我们需要拿到保存数据的具体类型，然后根据类型调用不同的保存方法
-	 * @param context
 	 * @param key
 	 * @param object 
 	 */
-	public static void setParam(Context context , String key, Object object){
+	public static void setParam(String key, Object object){
 		
 		String type = object.getClass().getSimpleName();
-		SharedPreferences sp = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
+		SharedPreferences sp = LsXmlRpcApplication.getContext().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sp.edit();
 		
 		if("String".equals(type)){
@@ -60,14 +62,13 @@ public class SPUtil {
 	
 	/**
 	 * 得到保存数据的方法，我们根据默认值得到保存的数据的具体类型，然后调用相对于的方法获取值
-	 * @param context
 	 * @param key
 	 * @param defaultObject
 	 * @return
 	 */
-	public static Object getParam(Context context , String key, Object defaultObject) {
+	public static Object getParam(String key, Object defaultObject) {
 		String type = defaultObject.getClass().getSimpleName();
-		SharedPreferences sp = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
+		SharedPreferences sp = LsXmlRpcApplication.getContext().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
 		
 		if("String".equals(type)){
 			return sp.getString(key, (String)defaultObject);
@@ -135,12 +136,11 @@ public class SPUtil {
 	/**
 	 * 使用SharedPreference保存对象
 	 *
-	 * @param context
 	 * @param key        储存对象的key
 	 * @param saveObject 储存的对象
 	 */
-	public static void setObjectBean(Context context, String key, Object saveObject) {
-		SharedPreferences sharedPreferences = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
+	public static void setObjectBean(String key, Object saveObject) {
+		SharedPreferences sharedPreferences = LsXmlRpcApplication.getContext().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 //		SharedPreferences sharedPreferences = MeiYin.getInstance().getApplication().getApplicationContext().getSharedPreferences(fileKey, Activity.MODE_PRIVATE);
 //		SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -152,15 +152,14 @@ public class SPUtil {
 	/**
 	 * 获取SharedPreference保存的对象
 	 *
-	 * @param context
 	 * @param key     储存对象的key
 	 * @return object 返回根据key得到的对象
 	 */
-	public static Object getObjectBean(Context context, String key) {
+	public static Object getObjectBean(String key) {
 //		SharedPreferences sharedPreferences = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
 //		SharedPreferences.Editor editor = sharedPreferences.edit();
 
-		SharedPreferences sharedPreferences = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
+		SharedPreferences sharedPreferences = LsXmlRpcApplication.getContext().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
 		String string = sharedPreferences.getString(key, null);
 		if (string != null) {
 			Object object = String2Object(string);
@@ -168,5 +167,26 @@ public class SPUtil {
 		} else {
 			return null;
 		}
+	}
+
+	public static boolean checkMethodAndUrl(String method){
+		if(SPUtil.getParam(Constants.SharedPreferancesKeys.USER_TOTAL_METHOD, "") != null
+				&& SPUtil.getParam(Constants.SharedPreferancesKeys.USER_TOTAL_METHOD, "").toString().contains(method)
+				&& SPUtil.getParam(Constants.SharedPreferancesKeys.BLOG_URL, "") != null){
+		    return true;
+		}
+		return false;
+	}
+
+	public static boolean checkLogined(){
+		if(SPUtil.getParam(Constants.SharedPreferancesKeys.BLOG_URL, "") != null
+				&& !SPUtil.getParam(Constants.SharedPreferancesKeys.BLOG_URL,"").toString().equals("")
+				&& SPUtil.getParam(Constants.SharedPreferancesKeys.USER_NAME, "") != null
+				&& !SPUtil.getParam(Constants.SharedPreferancesKeys.USER_NAME, "").toString().equals("")
+				&& SPUtil.getParam(Constants.SharedPreferancesKeys.USER_PASSWORD, "") != null
+				&& !SPUtil.getParam(Constants.SharedPreferancesKeys.USER_PASSWORD, "").toString().equals("")){
+		    return true;
+		}
+		return false;
 	}
 }

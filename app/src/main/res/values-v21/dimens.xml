@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="status_bar_height">25dp</dimen>
+    <dimen name="card_view_elevation">6dp</dimen>
+</resources>

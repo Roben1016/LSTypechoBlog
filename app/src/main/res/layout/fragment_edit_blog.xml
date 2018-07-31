@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/email_login_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/translator"
+            android:gravity="top"
+            android:textSize="17sp"
+            android:textColor="#111"
+            android:hint="@string/title_text"
+            android:imeActionId="@+id/login"
+            android:inputType="text"
+            android:padding="16dp"
+            android:scrollHorizontally="false"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/gray_lighter"/>
+
+        <EditText
+            android:textSize="16sp"
+            android:textColor="#333"
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#00000000"
+            android:gravity="top"
+            android:hint="@string/content_text"
+            android:inputType="textMultiLine|textLongMessage"
+            android:minHeight="200dp"
+            android:padding="16dp"
+            android:scrollHorizontally="false"
+            android:scrollbars="vertical"
+            android:singleLine="false"/>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

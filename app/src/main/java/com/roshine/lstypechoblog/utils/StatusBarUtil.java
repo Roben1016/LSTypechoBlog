@@ -3,6 +3,7 @@ package com.roshine.lstypechoblog.utils;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.ColorInt;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -24,7 +25,7 @@ import android.widget.FrameLayout;
  */
 public class StatusBarUtil {
 
-    public static void setColorBar(AppCompatActivity activity, @ColorInt int color, int alpha) {
+    public static void setColorBar(FragmentActivity activity, @ColorInt int color, int alpha) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = activity.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -48,10 +49,10 @@ public class StatusBarUtil {
     }
 
 
-    public static void setColorBar(AppCompatActivity activity,@ColorInt int color) {
+    public static void setColorBar(FragmentActivity activity, @ColorInt int color) {
         setColorBar(activity,color, 0);
     }
-    private static void setRootView(AppCompatActivity activity, boolean fit) {
+    private static void setRootView(FragmentActivity activity, boolean fit) {
         ViewGroup parent = (ViewGroup) activity.findViewById(android.R.id.content);
         for (int i = 0, count = parent.getChildCount(); i < count; i++) {
             View childView = parent.getChildAt(i);
@@ -82,7 +83,7 @@ public class StatusBarUtil {
         mStatusBarTintView.setBackgroundColor(color);
         return mStatusBarTintView;
     }
-    private static boolean navigationBarExist(AppCompatActivity activity) {
+    private static boolean navigationBarExist(FragmentActivity activity) {
         WindowManager windowManager = activity.getWindowManager();
         Display d = windowManager.getDefaultDisplay();
 

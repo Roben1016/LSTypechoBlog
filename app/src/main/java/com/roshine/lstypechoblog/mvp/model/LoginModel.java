@@ -1,19 +1,20 @@
 package com.roshine.lstypechoblog.mvp.model;
 
-import android.content.Context;
-import android.util.Log;
-
-import com.google.gson.Gson;
+import com.roshine.lstypechoblog.LsXmlRpcApplication;
 import com.roshine.lstypechoblog.R;
+import com.roshine.lstypechoblog.constants.Constants;
+import com.roshine.lstypechoblog.http.ErrorCallBack;
+import com.roshine.lstypechoblog.http.LsRetrofitManage;
+import com.roshine.lstypechoblog.http.RxUrlException;
+import com.roshine.lstypechoblog.http.RxUtil;
 import com.roshine.lstypechoblog.mvp.contract.ContractUtil;
-import com.roshine.lstypechoblog.request.BaseRequest;
-import com.roshine.lstypechoblog.request.LsXmlRpcClient;
-import com.roshine.lstypechoblog.request.RequestCallBack;
-import com.roshine.lstypechoblog.utils.LogUtil;
 import com.roshine.lstypechoblog.utils.SPUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.timroes.axmlrpc.XMLRPCException;
+import io.reactivex.Flowable;
 
 /**
  * @author Roshine
@@ -24,80 +25,130 @@ import java.util.List;
  * @phone 136****1535
  * @desc
  */
-public class LoginModel implements ILoginModel {
+public class LoginModel implements ContractUtil.ILoginModel {
 
     private ContractUtil.ILoginPresenter mILoginPresenter;
+//    private ErrorCallBack errorCallBack;
+//    private BaseRequest excute;
+//    private BaseRequest excute2;
 
     public LoginModel(ContractUtil.ILoginPresenter iLoginPresenter) {
         mILoginPresenter = iLoginPresenter;
+//        errorCallBack = new ErrorCallBack() {
+//            @Override
+//            public void error(Exception e) {
+//                if(e instanceof RxUrlException || e instanceof IllegalArgumentException){
+//                    mILoginPresenter.loginFail(context.getResources().getString(R.string.load_failed_url));
+//                } else if(e instanceof XMLRPCException){
+//                    mILoginPresenter.loginFail(context.getResources().getString(R.string.load_failed_parameters));
+//                } else{
+//                    mILoginPresenter.loginFail(context.getResources().getString(R.string.load_failed));
+//                }
+//                errorCallBack = null;
+//            }
+//        };
     }
 
     @Override
-    public void getAllMethod(Context context, String url, String userName, String password) {
-        List<Object> parameters = new ArrayList<>();
-//        parameters.add(url);
-        BaseRequest excute = LsXmlRpcClient.request(context)
-                .url(url)
-                .timeOut(30)
-                .method("system.listMethods")
-                .addParameters(parameters)
-                .callback(new RequestCallBack() {
-                    @Override
-                    public void onResponse(String result) {
-                        SPUtil.setParam(context, "userTotalMethod", result);
-                        SPUtil.setParam(context, "blogUrl", url);
-                        getAuthenty(context, userName, password);
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        LogUtil.showI("Roshine", "onError: " + error);
-                        mILoginPresenter.loginFail(error);
-                    }
-
-                    @Override
-                    public void onServerError(String error) {
-                        LogUtil.showI("Roshine", "onError: " + error);
-                        mILoginPresenter.loginFail(error);
-                    }
-                }).excute();
+    public Flowable<String> getAllMethod(String url, String userName, String password) {
+        if(url != null && !url.equals("")
+                && userName != null && !userName.equals("")
+                && password != null && !password.equals("")){
+            return LsRetrofitManage.getInstance()
+                    .baseUrl(url)
+                    .method(Constants.MethodNames.METHOD_LISTS)
+                    .errorCallBack(e -> {
+                        if(e instanceof RxUrlException || e instanceof IllegalArgumentException){
+                            mILoginPresenter.loginFail(LsXmlRpcApplication.getContext().getResources().getString(R.string.load_failed_url));
+                        } else if(e instanceof XMLRPCException){
+                            mILoginPresenter.loginFail(LsXmlRpcApplication.getContext().getResources().getString(R.string.load_failed_parameters));
+                        } else{
+                            mILoginPresenter.loginFail(LsXmlRpcApplication.getContext().getResources().getString(R.string.load_failed));
+                        }
+                    })
+                    .getService()
+                    .compose(RxUtil.handleResult());
+        }else{
+            return null;
+        }
+//        if(url == null || url.equals("") ){
+//            mILoginPresenter.loginFail(context.getResources().getString(R.string.null_url));
+//        }else if(userName == null || userName.equals("")){
+//            mILoginPresenter.loginFail(context.getResources().getString(R.string.null_user_name));
+//        }else if(password == null || password.equals("")){
+//            mILoginPresenter.loginFail(context.getResources().getString(R.string.null_user_pwd));
+//        }else{
+//            List<Object> parameters = new ArrayList<>();
+//            return LsRetrofitManage.getInstance()
+//                    .baseUrl(url)
+//                    .method(Constants.MethodNames.METHOD_LISTS)
+//                    .getService()
+//                    .compose(RxUtil.handleResult());
+//            excute = LsXmlRpcClient.request(context)
+//                    .url(url)
+//                    .method(Constants.MethodNames.METHOD_LISTS)
+//                    .addParameters(parameters)
+//                    .callback(new RequestCallBack() {
+//                        @Override
+//                        public void onResponse(String result) {
+//                            Gson gson = new Gson();
+//                            SPUtil.setParam(Constants.SharedPreferancesKeys.USER_TOTAL_METHOD, result);
+//                            SPUtil.setParam(Constants.SharedPreferancesKeys.BLOG_URL, url);
+//                            getAuthenty(context, userName, password);
+//                        }
+//
+//                        @Override
+//                        public void onError(String error) {
+//                            mILoginPresenter.loginFail(error);
+//                        }
+//                    }).excute();
+//        }
     }
 
     @Override
-    public void getAuthenty(Context context, String userName, String password) {
-        if (SPUtil.getParam(context, "userTotalMethod", "").toString().contains("wp.getUsersBlogs")
-                && SPUtil.getParam(context, "blogUrl", "") != null) {
+    public Flowable<String> getAuthenty( String userName, String password) {
+        if (SPUtil.checkMethodAndUrl(Constants.MethodNames.METHOD_GET_USER_BLOG)) {
             List<Object> parameters = new ArrayList<>();
             parameters.add(userName);
             parameters.add(password);
-            BaseRequest excute = LsXmlRpcClient.request(context)
-                    .url(SPUtil.getParam(context, "blogUrl", "").toString())
-                    .timeOut(30)
-                    .method("wp.getUsersBlogs")
-                    .addParameters(parameters)
-                    .callback(new RequestCallBack() {
+            return LsRetrofitManage.getInstance()
+                    .baseUrl(SPUtil.getParam(Constants.SharedPreferancesKeys.BLOG_URL, "").toString())
+                    .method(Constants.MethodNames.METHOD_GET_USER_BLOG)
+                    .parameters(parameters)
+                    .errorCallBack(new ErrorCallBack() {
                         @Override
-                        public void onResponse(String result) {
-                            Log.d("Roshine", "onResponse: " + result);
-                            SPUtil.setParam(context, "userName", userName);
-                            SPUtil.setParam(context, "userPassword", password);
-                            mILoginPresenter.loginSuccess();
+                        public void error(Exception e) {
+                            if(e instanceof RxUrlException || e instanceof IllegalArgumentException){
+                                mILoginPresenter.loginFail(LsXmlRpcApplication.getContext().getResources().getString(R.string.load_failed_url));
+                            } else if(e instanceof XMLRPCException){
+                                mILoginPresenter.loginFail(LsXmlRpcApplication.getContext().getResources().getString(R.string.load_failed_parameters));
+                            } else{
+                                mILoginPresenter.loginFail(LsXmlRpcApplication.getContext().getResources().getString(R.string.load_failed));
+                            }
                         }
-
-                        @Override
-                        public void onError(String error) {
-                            Log.d("Roshine", "onError: " + error);
-                            mILoginPresenter.loginFail(error);
-                        }
-
-                        @Override
-                        public void onServerError(String error) {
-                            Log.d("Roshine", "onError: " + error);
-                            mILoginPresenter.loginFail(error);
-                        }
-                    }).excute();
+                    })
+                    .getService()
+                    .compose(RxUtil.handleResult());
+//            excute2 = LsXmlRpcClient.request(context)
+//                    .url(SPUtil.getParam(Constants.SharedPreferancesKeys.BLOG_URL, "").toString())
+//                    .timeOut(30)
+//                    .method(Constants.MethodNames.METHOD_GET_USER_BLOG)
+//                    .addParameters(parameters)
+//                    .callback(new RequestCallBack() {
+//                        @Override
+//                        public void onResponse(String result) {
+//                            SPUtil.setParam(Constants.SharedPreferancesKeys.USER_NAME, userName);
+//                            SPUtil.setParam(Constants.SharedPreferancesKeys.USER_PASSWORD, password);
+//                            mILoginPresenter.loginSuccess();
+//                        }
+//
+//                        @Override
+//                        public void onError(String error) {
+//                            mILoginPresenter.loginFail(error);
+//                        }
+//                    }).excute();
         }else {
-            mILoginPresenter.loginFail(context.getResources().getString(R.string.load_failed));
+            return null;
         }
     }
 }

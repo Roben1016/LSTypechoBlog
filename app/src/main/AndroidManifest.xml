@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- 查看 Wi-Fi 状态 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".LsXmlRpcApplication"
@@ -29,6 +31,16 @@
         <activity android:name=".mvp.view.activity.ArticleListActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".mvp.view.activity.MainActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".mvp.view.activity.ThemeColorActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".mvp.view.activity.MediaListActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".mvp.view.activity.PreImageActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".mvp.view.activity.EditBlogActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".mvp.view.activity.WebViewActivity"
             android:screenOrientation="portrait"/>
     </application>
 
